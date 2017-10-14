@@ -1,6 +1,6 @@
 package com.juliens.technicaltestlbc.data.network;
 
-import com.juliens.technicaltestlbc.data.PhotoList;
+import com.juliens.technicaltestlbc.data.ListPhoto;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -32,7 +32,7 @@ public class Service {
         return ServiceHolder.instance;
     }
 
-    public Observable<PhotoList> getListPhoto(){
+    public Observable<ListPhoto> getListPhoto(){
         return networkService.getListPhoto()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());

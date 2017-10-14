@@ -2,7 +2,8 @@ package com.juliens.technicaltestlbc.listphoto;
 
 import android.support.annotation.NonNull;
 
-import io.reactivex.disposables.CompositeDisposable;
+import com.juliens.technicaltestlbc.data.ListPhoto;
+import com.juliens.technicaltestlbc.data.Photo;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -15,12 +16,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ListPhotoPresenter implements ListPhotoContract.Presenter {
     @NonNull
-    private CompositeDisposable mCompositeDisposable;
-    @NonNull
     private final ListPhotoContract.View mListPhotoView;
 
+    private ListPhoto listPhoto;
+
     public ListPhotoPresenter(@NonNull ListPhotoContract.View listPhotoView){
-        mCompositeDisposable = new CompositeDisposable();
         mListPhotoView = checkNotNull(listPhotoView, "tasksView cannot be null!");
         mListPhotoView.setPresenter(this);
     }
@@ -31,6 +31,25 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
 
     @Override
     public void unsubscribe() {
-        mCompositeDisposable.clear();
+
     }
+
+
+    @Override
+    public void loadPhotos() {
+
+    }
+
+    @Override
+    public int getPhotoItemCount() {
+        return listPhoto.getPhotoList().size();
+    }
+
+    @Override
+    public void onBindPhotoItemViewAtPosition(int position, ListPhotoContract.PhotoItemView itemView) {
+        Photo photo = listPhoto.getPhotoList().get(position);
+        //TODO set the view with the data
+    }
+
+
 }
