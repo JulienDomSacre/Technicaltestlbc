@@ -1,21 +1,28 @@
 package com.juliens.technicaltestlbc.listphoto;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.juliens.technicaltestlbc.R;
+import com.squareup.picasso.Picasso;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by juliens on 14/10/2017.
  */
 
 public class ListPhotoAdapter extends RecyclerView.Adapter<ListPhotoAdapter.ListPhotoHolder> {
-    private final ListPhotoPresenter presenter;
+    private final ListPhotoContract.Presenter presenter;
 
-    public ListPhotoAdapter(ListPhotoPresenter listPhotoPresenter) {
-        this.presenter = listPhotoPresenter;
+    public ListPhotoAdapter(ListPhotoContract.Presenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -34,20 +41,32 @@ public class ListPhotoAdapter extends RecyclerView.Adapter<ListPhotoAdapter.List
         return presenter.getPhotoItemCount();
     }
 
-    public static class ListPhotoHolder extends RecyclerView.ViewHolder implements ListPhotoContract.PhotoItemView {
-        //TODO bind widget layout
+    public static class ListPhotoHolder extends RecyclerView.ViewHolder implements ListPhotoContract.PhotoItemView{
+        @BindView(R.id.tv_id)
+        TextView tvId;
+        @BindView(R.id.tv_album_id)
+        TextView tvAlbumId;
+        @BindView(R.id.iv_photo)
+        ImageView ivPhoto;
+
         public ListPhotoHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this,itemView);
         }
 
         @Override
-        public void setImage() {
-
+        public void setImage(Context context, String url) {
+            Picasso.with(context).load(url).into(ivPhoto);
         }
 
         @Override
         public void setIdAlbum(int idAlbum) {
+            tvAlbumId.setText(String.valueOf(idAlbum));
+        }
 
+        @Override
+        public void setId(int id) {
+            tvId.setText(String.valueOf(id));
         }
     }
 }

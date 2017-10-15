@@ -1,7 +1,10 @@
 package com.juliens.technicaltestlbc.listphoto;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ListPhotoFragment extends Fragment implements ListPhotoContract.View{
     private ListPhotoContract.Presenter mPresenter;
+    private ListPhotoAdapter adapter;
+
+    public ListPhotoFragment() {
+        // Requires empty public constructor
+    }
 
     public static ListPhotoFragment newInstance() {
         Bundle arguments = new Bundle();
@@ -28,6 +36,10 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_list_photo, container, false);
+        RecyclerView recyclerView = root.findViewById(R.id.rc_photos_list);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
+        adapter = new ListPhotoAdapter(mPresenter);
+        recyclerView.setAdapter(adapter);
         setHasOptionsMenu(true);
         return root;
     }
@@ -48,4 +60,15 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
         super.onPause();
         mPresenter.unsubscribe();
     }
+
+    @Override
+    public void newData() {
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public Context getViewContext() {
+        return getContext();
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.juliens.technicaltestlbc.data.network;
 
-import com.juliens.technicaltestlbc.data.ListPhoto;
+import com.juliens.technicaltestlbc.data.Photo;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
@@ -11,5 +13,5 @@ import retrofit2.http.GET;
 
 public interface NetworkService {
     @GET ("photos")
-    Observable<ListPhoto> getListPhoto();
+    Observable<List<Photo>> getListPhoto();
 }

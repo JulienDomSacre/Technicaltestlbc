@@ -30,4 +30,12 @@ public class Photo {
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getAlbumId() {
+        return albumId;
+    }
 }

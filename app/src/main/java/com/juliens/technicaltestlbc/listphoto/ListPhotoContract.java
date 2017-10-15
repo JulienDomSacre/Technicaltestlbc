@@ -1,5 +1,7 @@
 package com.juliens.technicaltestlbc.listphoto;
 
+import android.content.Context;
+
 import com.juliens.technicaltestlbc.BasePresenter;
 import com.juliens.technicaltestlbc.BaseView;
 
@@ -12,15 +14,16 @@ public interface ListPhotoContract {
         void loadPhotos();
         int getPhotoItemCount();
         void onBindPhotoItemViewAtPosition(int position, PhotoItemView itemView);
-
     }
 
     interface View extends BaseView<Presenter> {
-
+        void newData();
+        Context getViewContext();
     }
 
     interface PhotoItemView {
-        void setImage();//TODO format
+        void setImage(Context context,String url);//TODO format
         void setIdAlbum(int idAlbum);
+        void setId(int id);// TODO delete later
     }
 }
