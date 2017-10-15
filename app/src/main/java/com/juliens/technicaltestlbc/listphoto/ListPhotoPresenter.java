@@ -3,6 +3,7 @@ package com.juliens.technicaltestlbc.listphoto;
 import android.support.annotation.NonNull;
 
 import com.juliens.technicaltestlbc.data.Photo;
+import com.juliens.technicaltestlbc.data.local.PhotoLocalDataSource;
 import com.juliens.technicaltestlbc.data.network.Service;
 
 import java.util.ArrayList;
@@ -34,15 +35,16 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
 
     @Override
     public void unsubscribe() {
-
     }
 
-    private void loadPhotos(final boolean isFirstLoad, final boolean showProgress){
-        //TODO check if data is present in DB
-        if(isFirstLoad) {
-            Service.getInstance().getListPhoto().subscribe(this::loadComplete, this::loadError);
-        }else{
-
+    private void loadPhotos(final boolean isFirstLoad, final boolean showProgress) {
+        if (isFirstLoad) {
+            PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).getPhotos().subscribe(photos -> listPhoto = photos);
+            if (listPhoto.isEmpty())
+                Service.getInstance().getListPhoto().subscribe(this::loadComplete, this::loadError);
+            else {
+                newDataReceive();
+            }
         }
     }
     @Override
@@ -60,6 +62,11 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
     private void loadComplete(List<Photo> listPhoto) {
         //TODO dismiss the progress
         this.listPhoto = listPhoto;
+        newDataReceive();
+        PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).savePhoto(listPhoto);
+    }
+
+    private void newDataReceive(){
         mListPhotoView.newData();
     }
 
