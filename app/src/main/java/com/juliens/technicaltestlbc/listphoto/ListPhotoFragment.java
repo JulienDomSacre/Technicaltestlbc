@@ -37,7 +37,7 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_list_photo, container, false);
         RecyclerView recyclerView = root.findViewById(R.id.rc_photos_list);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(),3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(),2));
         adapter = new ListPhotoAdapter(mPresenter);
         recyclerView.setAdapter(adapter);
         setHasOptionsMenu(true);
@@ -69,6 +69,11 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
     @Override
     public Context getViewContext() {
         return getContext();
+    }
+
+    @Override
+    public void setLoading(boolean isInProgress) {
+
     }
 
 }
