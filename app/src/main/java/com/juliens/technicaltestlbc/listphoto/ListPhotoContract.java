@@ -19,10 +19,12 @@ public interface ListPhotoContract {
     interface View extends BaseView<Presenter> {
         void newData();
         Context getViewContext();
+        void setLoading(boolean isInProgress);
+        void showErrorMessage(String errorMessage);
     }
 
     interface PhotoItemView {
-        void setImage(Context context,String url);//TODO format
+        void setImage(Context context,String url);
         void setIdAlbum(int idAlbum);
         void setId(int id);// TODO delete later
     }

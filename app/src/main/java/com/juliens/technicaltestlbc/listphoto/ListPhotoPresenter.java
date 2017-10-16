@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ListPhotoPresenter implements ListPhotoContract.Presenter {
     @NonNull
-    private final ListPhotoContract.View mListPhotoView;
+    private final ListPhotoContract.View mListPhotoView; //add cache?
     private boolean mFirstLoad = true;
     private List<Photo> listPhoto = new ArrayList<>();
 
@@ -38,6 +38,7 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
     }
 
     private void loadPhotos(final boolean isFirstLoad, final boolean showProgress) {
+        mListPhotoView.setLoading(true);
         if (isFirstLoad) {
             PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).getPhotos().subscribe(photos -> listPhoto = photos);
             if (listPhoto.isEmpty())
@@ -54,13 +55,10 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
     }
 
     private void loadError(Throwable error) {
-        String errorMessage = error.getMessage();
-        //TODO dismiss the progress
-        //TODO send to view the error message in toast;
+        mListPhotoView.showErrorMessage(error.getMessage());
     }
 
     private void loadComplete(List<Photo> listPhoto) {
-        //TODO dismiss the progress
         this.listPhoto = listPhoto;
         newDataReceive();
         PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).savePhoto(listPhoto);
@@ -68,6 +66,7 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
 
     private void newDataReceive(){
         mListPhotoView.newData();
+        mListPhotoView.setLoading(false);
     }
 
     @Override
@@ -82,6 +81,4 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
         itemView.setId(photo.getId());
         itemView.setImage(mListPhotoView.getViewContext(),photo.getThumbnailUrl());
     }
-
-
 }
