@@ -12,7 +12,6 @@ import com.juliens.technicaltestlbc.util.ActivityUtils;
  * This is the view in the MVP pattern
  */
 public class ListPhotoActivity extends AppCompatActivity {
-    private ListPhotoPresenter mListPhotoPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +34,5 @@ public class ListPhotoActivity extends AppCompatActivity {
             ActivityUtils.addFragmentToActivity(
                     getSupportFragmentManager(), listPhotoFragment, R.id.contentFrame);
         }
-
-        //create the presenter
-        mListPhotoPresenter = new ListPhotoPresenter(listPhotoFragment);
     }
 }

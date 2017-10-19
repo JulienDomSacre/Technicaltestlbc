@@ -2,7 +2,6 @@ package com.juliens.technicaltestlbc.listphoto;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,19 +12,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.juliens.technicaltestlbc.BaseFragment;
 import com.juliens.technicaltestlbc.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Created by juliens on 12/10/2017.
  */
 
-public class ListPhotoFragment extends Fragment implements ListPhotoContract.View{
-    private ListPhotoContract.Presenter mPresenter;
+public class ListPhotoFragment extends BaseFragment<ListPhotoContract.View,ListPhotoContract.Presenter> implements ListPhotoContract.View{
     private ListPhotoAdapter adapter;
 
     @BindView(R.id.ll_progressbar)
@@ -57,27 +54,10 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
         //TODO add scroll update
 
         rvListPhoto.setLayoutManager(new GridLayoutManager(getContext(),2));
-        adapter = new ListPhotoAdapter(mPresenter);
+        adapter = new ListPhotoAdapter(presenter);
         rvListPhoto.setAdapter(adapter);
         setHasOptionsMenu(true);
         return root;
-    }
-
-    @Override
-    public void setPresenter(ListPhotoContract.Presenter presenter) {
-        mPresenter = checkNotNull(presenter);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.subscribe();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mPresenter.unsubscribe();
     }
 
     @Override
@@ -107,5 +87,10 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
         tvErrorMessage.setVisibility(View.VISIBLE);
         tvErrorMessage.setText(R.string.error_message_load);
         Toast.makeText(getViewContext(),"error: "+errorMessage,Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected ListPhotoContract.Presenter initPresenter() {
+        return new ListPhotoPresenter();
     }
 }

@@ -1,7 +1,10 @@
 package com.juliens.technicaltestlbc.listphoto;
 
-import android.support.annotation.NonNull;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.OnLifecycleEvent;
+import android.os.Bundle;
 
+import com.juliens.technicaltestlbc.BasePresenter;
 import com.juliens.technicaltestlbc.data.Photo;
 import com.juliens.technicaltestlbc.data.local.PhotoLocalDataSource;
 import com.juliens.technicaltestlbc.data.network.Service;
@@ -11,8 +14,6 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Created by juliens on 12/10/2017.
  */
@@ -20,29 +21,58 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  *
  */
-public class ListPhotoPresenter implements ListPhotoContract.Presenter {
-    @NonNull
-    private final ListPhotoContract.View mListPhotoView; //add cache?
+public class ListPhotoPresenter extends BasePresenter<ListPhotoContract.View> implements ListPhotoContract.Presenter {
+    private static final String PROGRESS_BAR_STATE_KEY = "progress_bar_state_key";
+    private static final String ERROR_STATE_KEY = "error_state_key";
+    private static final String PHOTOS_STATE_KEY = "photos_state_key";
+    private static final String IS_FIRST_LOAD_STATE_KEY = "is_first_load_state_key";
     private boolean mFirstLoad = true;
     private List<Photo> listPhoto = new ArrayList<>();
+    private Bundle viewStateBundle = getStateBundle();
 
-    public ListPhotoPresenter(@NonNull ListPhotoContract.View listPhotoView){
-        mListPhotoView = checkNotNull(listPhotoView, "View cannot be null!");
-        mListPhotoView.setPresenter(this);
+
+    public ListPhotoPresenter(){
     }
+
+    @OnLifecycleEvent(value = Lifecycle.Event.ON_CREATE)
+    protected void onCreate() {
+        listPhoto = viewStateBundle.getParcelableArrayList(PHOTOS_STATE_KEY);
+        mFirstLoad = viewStateBundle.getBoolean(IS_FIRST_LOAD_STATE_KEY);
+        loadPhotos();
+        if (viewStateBundle.getBoolean(PROGRESS_BAR_STATE_KEY)) {
+            if (isViewAttached())
+                getView().setLoading(true);
+        }
+    }
+
+    @OnLifecycleEvent(value = Lifecycle.Event.ON_DESTROY)
+    protected void onDestroy() {
+        if (isViewAttached()){
+            viewStateBundle.putParcelableArrayList(PHOTOS_STATE_KEY,(ArrayList)listPhoto);
+            viewStateBundle.putBoolean(IS_FIRST_LOAD_STATE_KEY,mFirstLoad);
+            getView().setLoading(false);
+        }
+
+    }
+
     @Override
+    public void onPresenterDestroy() {
+        super.onPresenterDestroy();
+    }
+
+    /*@Override
     public void subscribe() {
         loadPhotos();
     }
 
     @Override
     public void unsubscribe() {
-    }
+    }*/
 
     private void loadPhotos(final boolean isFirstLoad, final boolean showProgress) {
-        mListPhotoView.setLoading(true);
+        getView().setLoading(true);
         if (isFirstLoad) {
-            PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).getPhotos()
+            PhotoLocalDataSource.getInstance(getView().getViewContext()).getPhotos()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(photos -> {
                 listPhoto = photos;
@@ -52,27 +82,28 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
                     newDataReceive();
                 }
             });
-        }
+        }else
+            newDataReceive();
     }
     @Override
     public void loadPhotos() {
         loadPhotos(mFirstLoad, true);
-        mFirstLoad = false;
     }
 
     private void loadError(Throwable error) {
-        mListPhotoView.showErrorMessage(error.getMessage());
+        getView().showErrorMessage(error.getMessage());
     }
 
     private void loadComplete(List<Photo> listPhoto) {
         this.listPhoto = listPhoto;
         newDataReceive();
-        PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).savePhoto(listPhoto);
+        PhotoLocalDataSource.getInstance(getView().getViewContext()).savePhoto(listPhoto);
     }
 
     private void newDataReceive(){
-        mListPhotoView.newData();
-        mListPhotoView.setLoading(false);
+        mFirstLoad = false;
+        getView().newData();
+        getView().setLoading(false);
     }
 
     @Override
@@ -85,6 +116,6 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
         Photo photo = listPhoto.get(position);
         itemView.setIdAlbum(photo.getAlbumId());
         itemView.setId(photo.getId());
-        itemView.setImage(mListPhotoView.getViewContext(),photo.getThumbnailUrl());
+        itemView.setImage(getView().getViewContext(),photo.getThumbnailUrl());
     }
 }
