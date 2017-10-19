@@ -9,6 +9,8 @@ import com.juliens.technicaltestlbc.data.network.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -40,12 +42,16 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
     private void loadPhotos(final boolean isFirstLoad, final boolean showProgress) {
         mListPhotoView.setLoading(true);
         if (isFirstLoad) {
-            PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).getPhotos().subscribe(photos -> listPhoto = photos);
-            if (listPhoto.isEmpty())
-                Service.getInstance().getListPhoto().subscribe(this::loadComplete, this::loadError);
-            else {
-                newDataReceive();
-            }
+            PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).getPhotos()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(photos -> {
+                listPhoto = photos;
+                if (listPhoto.isEmpty())
+                    Service.getInstance().getListPhoto().subscribe(this::loadComplete, this::loadError);
+                else {
+                    newDataReceive();
+                }
+            });
         }
     }
     @Override
