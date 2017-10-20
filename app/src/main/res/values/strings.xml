@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Technical test lbc</string>
+    <string name="error_message_load">Loading fail. Pull for retry.</string>
 </resources>
