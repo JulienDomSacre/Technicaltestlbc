@@ -6,14 +6,19 @@ import com.juliens.technicaltestlbc.data.Photo;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 /**
  * Created by juliens on 15/10/2017.
+ *
+ * Entry point for accessing photo data
  */
-
 public interface PhotoDataSource {
-    void savePhoto(@NonNull List<Photo> photos);
+    void savePhotos(@NonNull List<Photo> photos);
 
-    Flowable<List<Photo>> getPhotos();
+    /**
+     * Get all photos stored in the DB
+     * @return Stream of list of photo
+     */
+    Observable<List<Photo>> getPhotos();
 }

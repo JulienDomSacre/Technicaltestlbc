@@ -15,10 +15,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by juliens on 12/10/2017.
+ *
+ * Helper for open and use the network connection
  */
-
 public class Service {
     private static NetworkService networkService;
+
+    /**
+     * Initiate the service and the network
+     */
     private Service(){
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
@@ -40,6 +45,10 @@ public class Service {
         return ServiceHolder.instance;
     }
 
+    /**
+     * Call the API for GET the list of photo
+     * @return a reactive stream of list of photos
+     */
     public Observable<List<Photo>> getListPhoto(){
         return networkService.getListPhoto()
                 .subscribeOn(Schedulers.io())

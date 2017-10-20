@@ -16,11 +16,16 @@ import butterknife.ButterKnife;
 
 /**
  * Created by juliens on 14/10/2017.
+ *
+ * Adapter of the recycler view, in the MVP it's the presenter to know wich data show
  */
-
 public class ListPhotoAdapter extends RecyclerView.Adapter<ListPhotoAdapter.ListPhotoHolder> {
     private final ListPhotoContract.Presenter presenter;
 
+    /**
+     * Initiate the adapter with the presenter
+     * @param presenter set the presenter for to access the data
+     */
     public ListPhotoAdapter(ListPhotoContract.Presenter presenter) {
         this.presenter = presenter;
     }
@@ -29,6 +34,7 @@ public class ListPhotoAdapter extends RecyclerView.Adapter<ListPhotoAdapter.List
     public ListPhotoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ListPhotoHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_photo,parent,false));
     }
+
 
     @Override
     public void onBindViewHolder(ListPhotoHolder holder, int position) {
@@ -41,6 +47,9 @@ public class ListPhotoAdapter extends RecyclerView.Adapter<ListPhotoAdapter.List
         return presenter.getPhotoItemCount();
     }
 
+    /**
+     * The view holder of the recycler view
+     */
     public static class ListPhotoHolder extends RecyclerView.ViewHolder implements ListPhotoContract.PhotoItemView{
         @BindView(R.id.tv_id)
         TextView tvId;

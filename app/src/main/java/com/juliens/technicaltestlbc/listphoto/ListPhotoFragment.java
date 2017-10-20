@@ -2,6 +2,7 @@ package com.juliens.technicaltestlbc.listphoto;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,8 +23,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by juliens on 12/10/2017.
+ *
+ * The view of the MVP. Display a grid of Photos.
  */
-
 public class ListPhotoFragment extends Fragment implements ListPhotoContract.View{
     private ListPhotoContract.Presenter mPresenter;
     private ListPhotoAdapter adapter;
@@ -42,10 +44,13 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
     }
 
     public static ListPhotoFragment newInstance() {
-        Bundle arguments = new Bundle();
-        ListPhotoFragment fragment = new ListPhotoFragment();
-        fragment.setArguments(arguments);
-        return fragment;
+        return new ListPhotoFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //TODO saveInstanceState of data or presenter?
     }
 
     @Override
@@ -54,15 +59,18 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
         View root = inflater.inflate(R.layout.fragment_list_photo, container, false);
         ButterKnife.bind(this,root);
 
-        //TODO add scroll update
+        //TODO add scroll update if has a network error
 
         rvListPhoto.setLayoutManager(new GridLayoutManager(getContext(),2));
         adapter = new ListPhotoAdapter(mPresenter);
         rvListPhoto.setAdapter(adapter);
-        setHasOptionsMenu(true);
         return root;
     }
 
+    /**
+     * link the presenter to the view
+     * @param presenter
+     */
     @Override
     public void setPresenter(ListPhotoContract.Presenter presenter) {
         mPresenter = checkNotNull(presenter);
@@ -81,7 +89,7 @@ public class ListPhotoFragment extends Fragment implements ListPhotoContract.Vie
     }
 
     @Override
-    public void newData() {
+    public void dataChange() {
         adapter.notifyDataSetChanged();
     }
 

@@ -14,17 +14,15 @@ import com.squareup.sqlbrite2.SqlBrite;
 
 import java.util.List;
 
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Created by juliens on 15/10/2017.
+ *
+ * Implementation of the data source
  */
-
 public class PhotoLocalDataSource implements PhotoDataSource {
     @Nullable
     private static PhotoLocalDataSource INSTANCE;
@@ -35,8 +33,11 @@ public class PhotoLocalDataSource implements PhotoDataSource {
     @NonNull
     private Function<Cursor, Photo> mPhotoMapperFunction;
 
+    /**
+     * Init the data source. Use the SqlBrite for the reactive stream in the queries
+     * @param context
+     */
     private PhotoLocalDataSource(@NonNull Context context) {
-        checkNotNull(context, "context cannot be null");
         PhotoDbHelper dbHelper = new PhotoDbHelper(context);
         SqlBrite sqlBrite = new SqlBrite.Builder().build();
         mDatabaseHelper = sqlBrite.wrapDatabaseHelper(dbHelper, Schedulers.io());
@@ -51,6 +52,11 @@ public class PhotoLocalDataSource implements PhotoDataSource {
         return INSTANCE;
     }
 
+    /**
+     * Transform an item into a photo
+     * @param c the sql cursor
+     * @return a photo
+     */
     @NonNull
     private Photo getPhoto(@NonNull Cursor c) {
         int id = c.getInt(c.getColumnIndexOrThrow(PhotoEntry.COLUMN_NAME_ID));
@@ -61,11 +67,14 @@ public class PhotoLocalDataSource implements PhotoDataSource {
         return new Photo(id, albumId, title, url, thumbnailUrl);
     }
 
+    /**
+     * Save a list of photos in asynchronous
+     * @param photos List of photos
+     */
     @Override
-    public void savePhoto(@NonNull List<Photo> photos) {
-        checkNotNull(photos);
-
+    public void savePhotos(@NonNull List<Photo> photos) {
         //Not the best implementation :s
+        //TODO use RX
         Runnable runnable = () -> {
             photos.forEach(photo -> {
                 ContentValues values = new ContentValues();
@@ -81,10 +90,9 @@ public class PhotoLocalDataSource implements PhotoDataSource {
     }
 
     @Override
-    public Flowable<List<Photo>> getPhotos() {
+    public Observable<List<Photo>> getPhotos() {
         return mDatabaseHelper.createQuery(PhotoEntry.TABLE_NAME,
                 "SELECT * FROM " + PhotoEntry.TABLE_NAME)
-                .mapToList(mPhotoMapperFunction)
-                .toFlowable(BackpressureStrategy.BUFFER);
+                .mapToList(mPhotoMapperFunction);
     }
 }

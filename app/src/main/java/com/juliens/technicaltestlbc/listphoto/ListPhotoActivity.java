@@ -9,10 +9,9 @@ import com.juliens.technicaltestlbc.R;
 import com.juliens.technicaltestlbc.util.ActivityUtils;
 
 /**
- * This is the view in the MVP pattern
+ * This is the main activity of the application
  */
 public class ListPhotoActivity extends AppCompatActivity {
-    private ListPhotoPresenter mListPhotoPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +25,8 @@ public class ListPhotoActivity extends AppCompatActivity {
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
 
+        //TODO add the navigation drawer
+
         //set the fragment
         ListPhotoFragment listPhotoFragment =
                 (ListPhotoFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
@@ -37,6 +38,6 @@ public class ListPhotoActivity extends AppCompatActivity {
         }
 
         //create the presenter
-        mListPhotoPresenter = new ListPhotoPresenter(listPhotoFragment);
+       new ListPhotoPresenter(listPhotoFragment);
     }
 }

@@ -6,12 +6,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 /**
  * Created by juliens on 15/10/2017.
+ *
+ * Data base helper for open connection, create and upgrade the base
  */
-
 public class PhotoDbHelper extends SQLiteOpenHelper{
-    public static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 1;
 
-    public static final String DATABASE_NAME = "Photo.db";
+    private  static final String DATABASE_NAME = "Photo.db";
 
     private static final String TEXT_TYPE = " TEXT";
 
@@ -19,6 +20,9 @@ public class PhotoDbHelper extends SQLiteOpenHelper{
 
     private static final String COMMA_SEP = ",";
 
+    /**
+     * Structure of the base
+     */
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + PhotoPersistenceContract.PhotoEntry.TABLE_NAME + " (" +
                     PhotoPersistenceContract.PhotoEntry.COLUMN_NAME_ID + INT_TYPE + " PRIMARY KEY," +
@@ -29,7 +33,11 @@ public class PhotoDbHelper extends SQLiteOpenHelper{
                     " )";
 
 
-    public PhotoDbHelper(Context context){
+    /**
+     * open the connection to the DB
+     * @param context
+     */
+    PhotoDbHelper(Context context){
         super(context,DATABASE_NAME,null, DATABASE_VERSION);
     }
 

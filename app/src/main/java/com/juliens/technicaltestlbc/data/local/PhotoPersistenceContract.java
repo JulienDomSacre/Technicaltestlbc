@@ -10,7 +10,7 @@ public class PhotoPersistenceContract {
     private PhotoPersistenceContract(){
     }
 
-    public static abstract class PhotoEntry implements BaseColumns{
+    protected static abstract class PhotoEntry implements BaseColumns{
         public static final String TABLE_NAME = "photos";
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_ALBUM_ID = "albumId";

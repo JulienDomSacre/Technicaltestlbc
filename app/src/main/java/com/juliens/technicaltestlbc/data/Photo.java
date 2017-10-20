@@ -2,9 +2,10 @@ package com.juliens.technicaltestlbc.data;
 
 /**
  * Created by juliens on 12/10/2017.
+ *
+ * Model class for a photo
  */
-
-public class Photo {
+public final class Photo {
     private int id;
     private int albumId;
     private String title;

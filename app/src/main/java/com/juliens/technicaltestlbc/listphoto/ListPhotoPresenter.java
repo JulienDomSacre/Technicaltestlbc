@@ -15,21 +15,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by juliens on 12/10/2017.
- */
-
-/**
  *
+ * The presenter of the MVP
  */
 public class ListPhotoPresenter implements ListPhotoContract.Presenter {
     @NonNull
-    private final ListPhotoContract.View mListPhotoView; //add cache?
-    private boolean mFirstLoad = true;
-    private List<Photo> listPhoto = new ArrayList<>();
+    private final ListPhotoContract.View mListPhotoView;
+    private boolean mFirstLoad = true; // not really use for the moment, it's for the state change
+    private List<Photo> listPhoto = new ArrayList<>(); //add cache?
 
-    public ListPhotoPresenter(@NonNull ListPhotoContract.View listPhotoView){
+    ListPhotoPresenter(@NonNull ListPhotoContract.View listPhotoView){
         mListPhotoView = checkNotNull(listPhotoView, "View cannot be null!");
         mListPhotoView.setPresenter(this);
     }
+
+
     @Override
     public void subscribe() {
         loadPhotos();
@@ -39,8 +39,14 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
     public void unsubscribe() {
     }
 
+    /**
+     * Load the photo, select automaticaly the source of data (network or local)
+     * @param isFirstLoad Pass in true if you want to load the data
+     * @param showProgress Pass in true for show the progress in the UI
+     */
     private void loadPhotos(final boolean isFirstLoad, final boolean showProgress) {
-        mListPhotoView.setLoading(true);
+        if(showProgress)
+            mListPhotoView.setLoading(true);
         if (isFirstLoad) {
             PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).getPhotos()
                     .observeOn(AndroidSchedulers.mainThread())
@@ -54,24 +60,37 @@ public class ListPhotoPresenter implements ListPhotoContract.Presenter {
             });
         }
     }
+
+
     @Override
     public void loadPhotos() {
         loadPhotos(mFirstLoad, true);
         mFirstLoad = false;
     }
 
+    /**
+     * Show the error message if the loading of network photo data have a problem
+     * @param error The error information
+     */
     private void loadError(Throwable error) {
         mListPhotoView.showErrorMessage(error.getMessage());
     }
 
+    /**
+     *  Receive the data loaded by the network, warn the ui and backups in the DB
+     * @param listPhoto list of the Photo load from the network
+     */
     private void loadComplete(List<Photo> listPhoto) {
         this.listPhoto = listPhoto;
         newDataReceive();
-        PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).savePhoto(listPhoto);
+        PhotoLocalDataSource.getInstance(mListPhotoView.getViewContext()).savePhotos(listPhoto);
     }
 
+    /**
+     * warns the UI that new data is available
+     */
     private void newDataReceive(){
-        mListPhotoView.newData();
+        mListPhotoView.dataChange();
         mListPhotoView.setLoading(false);
     }
 
